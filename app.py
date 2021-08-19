@@ -80,15 +80,35 @@ def get_size():
 def screen_shot(folder_path):
 	i = 0
 	save_file = False
+	#new
+	global imsrc_name
+	global imobj_name
+
 	while save_file != True:
 		filename = ('screen_shot' + str(i) + '.png')
 		if folder_path == 'log':
-			filename = (os.path.join('log', filename))		
+			filename = (os.path.join('Log', filename))
 		if os.path.isfile(filename):
 			i = i + 1
 		else:
 			driver.get_screenshot_as_file(filename)#截屏手機
+			imsrc_name = ('screen_shot' + str(i) + '.png')
+			print(imsrc_name)
 			save_file = True
+
+def which_card():
+	global imobj_name
+	corrcet_number = 0
+	new_confidence = 0
+	for card_number in range(1, 4):
+		imobj_name = (str(card_number) + '.png')
+		card_match = matchImg(0.5, 'Check')
+		if card_match != None:
+			if card_match['confidence'] > new_confidence:
+				new_confidence = card_match['confidence']
+				corrcet_number = card_number
+	return corrcet_number
+
 
 def matchImg(confidence, mode):#imgsrc=原始圖像，imgobj=待查找的圖片
 	imsrc = ''
@@ -159,6 +179,9 @@ while True:
 
 			time.sleep(2)
 			screen_shot('log')
+			card_resoult = which_card()
+			search_table(str(card_resoult))
+
 			imsrc_name = set_img_name(img_location[2][0])
 			imobj_name = set_img_name(img_location[2][1])
 			tab_image()
